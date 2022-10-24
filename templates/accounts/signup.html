@@ -3,8 +3,13 @@
 <title>ユーザー登録</title>
 
 <body>
-    <h1>ログイン</h1>
     <h1>登録</h1>
+    <form method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" value="Send message">送信</button>
+    </form>
 </body>
+
+
 
 </html>
