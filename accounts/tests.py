@@ -4,12 +4,12 @@ from .models import User
 from .forms import AccountsForm
 
 
-class TestSignUpView(TestCase):
+class TestSignUpSuccessView(TestCase):
     def setUp(self):
         self.url = reverse("accounts:signup")
 
     def test_success_get(self):
-        response = self.client.get(reverse("accounts:signup"))
+        response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_success_post(self):
@@ -38,6 +38,11 @@ class TestSignUpView(TestCase):
                 email=test_data["email"],
             ).exists()
         )
+
+
+class TestSignUpFailureView(TestCase):
+    def setUp(self):
+        self.url = reverse("accounts:signup")
 
     def test_failure_post_with_empty_form(self):
         empty_data = {
