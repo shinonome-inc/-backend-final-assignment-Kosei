@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from .models import User
 from .forms import AccountsForm, LoginForm
+from django.contrib.auth import SESSION_KEY
 
 
 class TestSignUpSuccessView(TestCase):
@@ -38,8 +39,6 @@ class TestSignUpSuccessView(TestCase):
                 email=test_data["email"],
             ).exists()
         )
-
-        # client.sessionにSESSIONKEYが含まれているかどうか。
 
 
 class TestSignUpFailureView(TestCase):
@@ -263,7 +262,7 @@ class TestLoginSuccessView(TestCase):
             ).exists()
         )
 
-        # client.sessionにSESSIONKEYが含まれているかどうか。
+        self.assertIn(SESSION_KEY, self.client.session)
 
 
 class TestLoginFailureView(TestCase):
@@ -290,6 +289,8 @@ class TestLoginFailureView(TestCase):
             ["正しいユーザー名とパスワードを入力してください。どちらのフィールドも大文字と小文字は区別されます。"],
         )
 
+        self.assertNotIn(SESSION_KEY, self.client.session)
+
     def test_failure_post_with_empty_password(self):
         test_data = {
             "username": "testuser",
@@ -304,6 +305,8 @@ class TestLoginFailureView(TestCase):
             form.errors["__all__"],
             ["正しいユーザー名とパスワードを入力してください。どちらのフィールドも大文字と小文字は区別されます。"],
         )
+
+        self.assertNotIn(SESSION_KEY, self.client.session)
 
 
 class TestLogoutView(TestCase):
@@ -327,6 +330,7 @@ class TestLogoutView(TestCase):
             msg_prefix="",
             fetch_redirect_response=True,
         )
+        self.assertNotIn(SESSION_KEY, self.client.session)
 
 
 class TestUserProfileView(TestCase):
