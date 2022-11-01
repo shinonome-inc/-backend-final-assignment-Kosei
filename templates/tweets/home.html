@@ -8,4 +8,7 @@
 <h1>Backend Final Assignment</h1>
 
 <h3 align="center"><a href="" type="button">ツイート</a></h3>
+<h3 align="center"><a href="{% url 'accounts:logout' %}" type="button">ログアウト</a></h3>
+<h3 align="center"><a href="{% url 'accounts:login' %}" type="button">ログイン</a></h3>
+<h3 align="center"><a href="{% url 'accounts:signup' %}" type="button">登録</a></h3>
 {% endblock %}

@@ -2,7 +2,7 @@ from .forms import AccountsForm, LoginForm
 from django.views.generic import CreateView
 from .models import User
 from django.urls import reverse_lazy
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
 
 
 class SignUpView(CreateView):
@@ -16,5 +16,6 @@ class LoginView(LoginView):
     template_name = "accounts/login.html"
     form_class = LoginForm
 
-    # class LogoutView:
+
+class LogoutView(LogoutView):
     pass
