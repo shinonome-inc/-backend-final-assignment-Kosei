@@ -1,0 +1,10 @@
+{% extends 'welcome/base.html'%}
+{% block title %}SIGNUP{% endblock %}
+
+{% block content %}
+<h1>登録</h1>
+<form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" value="Send message">送信</button>
+</form>
+{% endblock %}
