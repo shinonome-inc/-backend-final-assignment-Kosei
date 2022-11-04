@@ -223,7 +223,7 @@ class HomeView(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class TestLoginSuccessView(TestCase):
+class TestLoginView(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
             username="testuser",
@@ -265,15 +265,7 @@ class TestLoginSuccessView(TestCase):
         self.assertIn(SESSION_KEY, self.client.session)
 
 
-class TestLoginFailureView(TestCase):
-    def setUp(self):
-        self.user = User.objects.create_user(
-            username="testuser",
-            email="test@example.com",
-            password="testpassword",
-        )
-        self.url = reverse("accounts:login")
-
+class TestLoginView(TestCase):
     def test_failure_post_with_not_exists_user(self):
         test_data = {
             "username": "no_testuser",
