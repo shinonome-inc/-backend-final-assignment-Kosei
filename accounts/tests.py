@@ -264,8 +264,6 @@ class TestLoginView(TestCase):
 
         self.assertIn(SESSION_KEY, self.client.session)
 
-
-class TestLoginView(TestCase):
     def test_failure_post_with_not_exists_user(self):
         test_data = {
             "username": "no_testuser",
