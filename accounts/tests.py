@@ -219,6 +219,12 @@ class TestSignUpFailureView(TestCase):
 
 class HomeView(TestCase):
     def test_success_get(self):
+        self.user = User.objects.create(
+            username="testuser",
+            email="test@example.com",
+            password="testpassword",
+        )
+        self.client.force_login(self.user)
         response = self.client.get(reverse("tweets:home"))
         self.assertEqual(response.status_code, 200)
 
