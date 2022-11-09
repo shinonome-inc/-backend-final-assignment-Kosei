@@ -1,5 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
+
+from mysite.settings import LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL
 from .models import User
 from .forms import AccountsForm, LoginForm
 from django.contrib.auth import SESSION_KEY
@@ -26,7 +28,7 @@ class TestSignUpSuccessView(TestCase):
 
         self.assertRedirects(
             response,
-            reverse("tweets:home"),
+            reverse(LOGIN_REDIRECT_URL),
             status_code=302,
             target_status_code=200,
             msg_prefix="",
@@ -320,7 +322,7 @@ class TestLogoutView(TestCase):
 
         self.assertRedirects(
             response,
-            reverse("welcome:top"),
+            reverse(LOGOUT_REDIRECT_URL),
             status_code=302,
             target_status_code=200,
             msg_prefix="",
