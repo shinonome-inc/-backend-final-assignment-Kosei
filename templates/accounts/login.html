@@ -1,0 +1,14 @@
+{% extends 'common/base.html' %}
+
+{% block title %}LOGIN{% endblock %}
+
+{% block content %}
+<h3><a href="" type="button">Twitter Clone</a></h3>
+
+<h1>Backend Final Assignment</h1>
+
+<form method="post">{% csrf_token %}
+    {{form.as_p}}
+    <button type="submit" value="Send message">送信</button>
+</form>
+{% endblock %}

@@ -1,7 +1,10 @@
 from django.test import TestCase
 from django.urls import reverse
+
+from mysite.settings import LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL
 from .models import User
-from .forms import AccountsForm
+from .forms import AccountsForm, LoginForm
+from django.contrib.auth import SESSION_KEY
 
 
 class TestSignUpSuccessView(TestCase):
@@ -25,7 +28,7 @@ class TestSignUpSuccessView(TestCase):
 
         self.assertRedirects(
             response,
-            reverse("tweets:home"),
+            reverse(LOGIN_REDIRECT_URL),
             status_code=302,
             target_status_code=200,
             msg_prefix="",
@@ -218,27 +221,114 @@ class TestSignUpFailureView(TestCase):
 
 class HomeView(TestCase):
     def test_success_get(self):
+        self.user = User.objects.create(
+            username="testuser",
+            email="test@example.com",
+            password="testpassword",
+        )
+        self.client.force_login(self.user)
         response = self.client.get(reverse("tweets:home"))
         self.assertEqual(response.status_code, 200)
 
 
 class TestLoginView(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser",
+            email="test@example.com",
+            password="testpassword",
+        )
+        self.url = reverse("accounts:login")
+
     def test_success_get(self):
-        pass
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
 
     def test_success_post(self):
-        pass
+        test_data = {
+            "username": "testuser",
+            "email": "test@example.com",
+            "password": "testpassword",
+        }
+
+        response = self.client.post(self.url, test_data)
+        self.assertEqual(response.status_code, 302)
+
+        self.assertRedirects(
+            response,
+            reverse("tweets:home"),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix="",
+            fetch_redirect_response=True,
+        )
+
+        self.assertTrue(
+            User.objects.filter(
+                username=test_data["username"],
+                email=test_data["email"],
+            ).exists()
+        )
+
+        self.assertIn(SESSION_KEY, self.client.session)
 
     def test_failure_post_with_not_exists_user(self):
-        pass
+        test_data = {
+            "username": "no_testuser",
+            "password": "testpassword",
+        }
+
+        response = self.client.post(self.url, test_data)
+        self.assertEqual(response.status_code, 200)
+
+        form = LoginForm(data=test_data)
+        self.assertEqual(
+            form.errors["__all__"],
+            ["正しいユーザー名とパスワードを入力してください。どちらのフィールドも大文字と小文字は区別されます。"],
+        )
+
+        self.assertNotIn(SESSION_KEY, self.client.session)
 
     def test_failure_post_with_empty_password(self):
-        pass
+        test_data = {
+            "username": "testuser",
+            "password": "test_password",
+        }
+
+        response = self.client.post(self.url, test_data)
+        self.assertEqual(response.status_code, 200)
+
+        form = LoginForm(data=test_data)
+        self.assertEqual(
+            form.errors["__all__"],
+            ["正しいユーザー名とパスワードを入力してください。どちらのフィールドも大文字と小文字は区別されます。"],
+        )
+
+        self.assertNotIn(SESSION_KEY, self.client.session)
 
 
 class TestLogoutView(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser",
+            email="test@example.com",
+            password="testpassword",
+        )
+        self.url = reverse("accounts:logout")
+
     def test_success_get(self):
-        pass
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+
+        self.assertRedirects(
+            response,
+            reverse(LOGOUT_REDIRECT_URL),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix="",
+            fetch_redirect_response=True,
+        )
+        self.assertNotIn(SESSION_KEY, self.client.session)
 
 
 class TestUserProfileView(TestCase):

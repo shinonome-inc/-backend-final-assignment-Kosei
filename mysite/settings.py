@@ -53,6 +53,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+
 ROOT_URLCONF = "mysite.urls"
 
 TEMPLATES = [
@@ -130,3 +131,7 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static/")]
 
 AUTH_USER_MODEL = "accounts.User"
+
+LOGIN_URL = "accounts:login"
+LOGIN_REDIRECT_URL = "tweets:home"
+LOGOUT_REDIRECT_URL = "welcome:top"
