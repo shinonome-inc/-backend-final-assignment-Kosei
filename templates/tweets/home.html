@@ -13,13 +13,15 @@
 
         <div>
             {% for tweet in object_list %}
-            <div>
-                <h6>{{ tweet.author }}</h6>
-                <h5><a href="{% url 'tweets:detail' tweet.pk %}">{{ tweet.text }}</a></h5>
-                <h6>{{ tweet.created_date }}</h6>
-                {% if request.user == tweet.author %}
-                <h6><a href="{% url 'tweets:delete' tweet.pk %}" type="button">削除</a></h6>
-                {% endif %}
+            <div class="tweet_box">
+                <a href="{% url 'tweets:detail' tweet.pk %}">
+                    <p>{{ tweet.author }}</p>
+                    <p>{{ tweet.text }}</p>
+                    <p>{{ tweet.created_date }}</p>
+                    {% if request.user == tweet.author %}
+                    <p><a href="{% url 'tweets:delete' tweet.pk %}" type="button">削除</a></p>
+                    {% endif %}
+                </a>
             </div>
             {% endfor %}
         </div>
