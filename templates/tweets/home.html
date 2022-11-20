@@ -17,7 +17,9 @@
                 <h6>{{ tweet.author }}</h6>
                 <h5><a href="{% url 'tweets:detail' tweet.pk %}">{{ tweet.text }}</a></h5>
                 <h6>{{ tweet.created_date }}</h6>
+                {% if request.user == tweet.author %}
                 <h6><a href="{% url 'tweets:delete' tweet.pk %}" type="button">削除</a></h6>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
