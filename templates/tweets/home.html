@@ -8,8 +8,18 @@
 
 <h1>Backend Final Assignment</h1>
 
-<h3 align="center"><a href="{% url 'tweets:create' %}" type="button">ツイート</a></h3>
-<h3 align="center"><a href="{% url 'accounts:logout' %}" type="button">ログアウト</a></h3>
-<h3 align="center"><a href="{% url 'accounts:login' %}" type="button">ログイン</a></h3>
-<h3 align="center"><a href="{% url 'accounts:signup' %}" type="button">登録</a></h3>
-{% endblock %}
+<h5><a href="{% url 'tweets:create' %}" type="button">ツイート</a></h3>
+    <h5><a href="{% url 'accounts:logout' %}" type="button">ログアウト</a></h3>
+
+        <div>
+            {% for tweet in object_list %}
+            <div>
+                <h6>{{ tweet.author }}</h6>
+                <h5><a href="{% url 'tweets:detail' tweet.pk %}">{{ tweet.text }}</a></h5>
+                <h6>{{ tweet.created_date }}</h6>
+                <h6><a href="{% url 'tweets:delete' tweet.pk %}" type="button">削除</a></h6>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% endblock %}
