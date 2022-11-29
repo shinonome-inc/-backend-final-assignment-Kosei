@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from mysite.settings import LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL
+from tweets.models import TweetModel
 from .models import User
 from .forms import AccountsForm, LoginForm
 from django.contrib.auth import SESSION_KEY
@@ -219,18 +220,6 @@ class TestSignUpFailureView(TestCase):
         self.assertEqual(User.objects.count(), 0)
 
 
-class HomeView(TestCase):
-    def test_success_get(self):
-        self.user = User.objects.create(
-            username="testuser",
-            email="test@example.com",
-            password="testpassword",
-        )
-        self.client.force_login(self.user)
-        response = self.client.get(reverse("tweets:home"))
-        self.assertEqual(response.status_code, 200)
-
-
 class TestLoginView(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
@@ -333,7 +322,19 @@ class TestLogoutView(TestCase):
 
 class TestUserProfileView(TestCase):
     def test_success_get(self):
-        pass
+        self.user = User.objects.create_user(
+            username="testuser",
+            email="test@example.com",
+            password="testpassword",
+        )
+        self.client.force_login(self.user)
+        self.data = TweetModel.objects.create(author=self.user, text="test tweet")
+        self.url = reverse("tweets:user_profile", kwargs={"username": "testuser"})
+        response = self.client.get(self.url)
+        self.assertQuerysetEqual(
+            response.context["object_list"],
+            TweetModel.objects.filter(author=self.user),
+        )
 
 
 class TestUserProfileEditView(TestCase):
