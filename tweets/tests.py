@@ -85,14 +85,45 @@ class TestTweetDetailView(TestCase):
 
 
 class TestTweetDeleteView(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create_user(
+            username="testuser1",
+            email="test1@example.com",
+            password="testpassword1",
+        )
+        self.user2 = User.objects.create_user(
+            username="testuser2",
+            email="test2@example.com",
+            password="testpassword2",
+        )
+
+        self.data = TweetModel.objects.create(author=self.user1, text="test tweet")
+        self.url = reverse("tweets:delete", kwargs={"pk": self.data.pk})
+
     def test_success_post(self):
-        pass
+        self.client.force_login(self.user1)
+        response = self.client.post(self.url)
+        self.assertRedirects(
+            response,
+            reverse("tweets:home"),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix="",
+            fetch_redirect_response=True,
+        )
+        self.assertFalse(TweetModel.objects.filter(text="test tweet").exists())
 
     def test_failure_post_with_not_exist_tweet(self):
-        pass
+        self.client.force_login(self.user1)
+        response = self.client.post(reverse("tweets:delete", kwargs={"pk": 714}))
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(TweetModel.objects.count(), 1)
 
     def test_failure_post_with_incorrect_user(self):
-        pass
+        self.client.force_login(self.user2)
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(TweetModel.objects.count(), 1)
 
 
 class TestFavoriteView(TestCase):
