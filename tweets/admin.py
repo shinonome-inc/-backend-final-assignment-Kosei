@@ -4,7 +4,7 @@ from .models import TweetModel
 
 
 class TweetAdmin(admin.ModelAdmin):
-    fields = ["author", "text", "created_date"]
+    fields = ["author", "text", "created_at"]
 
 
 admin.site.register(TweetModel, TweetAdmin)

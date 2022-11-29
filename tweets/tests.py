@@ -1,28 +1,87 @@
 from django.test import TestCase
+from django.urls import reverse
+from accounts.models import User
+from tweets.forms import TweetForm
+from tweets.models import TweetModel
 
 
 class TestHomeView(TestCase):
+    def setup(self):
+        self.user = User.objects.create_user(
+            username="testuser",
+            email="test@example.com",
+            password="testpassword",
+        )
+        self.url = reverse("tweets:home")
+        self.client.force_login(self.user)
+
     def test_success_get(self):
         pass
 
 
 class TestTweetCreateView(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser",
+            email="test@example.com",
+            password="testpassword",
+        )
+        self.url = reverse("tweets:create")
+        self.client.force_login(self.user)
+
     def test_success_get(self):
-        pass
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
 
     def test_success_post(self):
-        pass
+        test_data = {"text": "test tweet"}
+        response = self.client.post(self.url, test_data)
+
+        self.assertRedirects(
+            response,
+            reverse("tweets:home"),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix="",
+            fetch_redirect_response=True,
+        )
+        self.assertTrue(TweetModel.objects.filter(text=test_data["text"]).exists())
 
     def test_failure_post_with_empty_content(self):
-        pass
+        test_data = {"text": ""}
+        response = self.client.post(self.url, test_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(TweetModel.objects.filter(text=test_data["text"]).exists())
+        form = TweetForm(data=test_data)
+        self.assertEqual(form.errors["text"], ["このフィールドは必須です。"])
 
     def test_failure_post_with_too_long_content(self):
-        pass
+        test_data = {"text": "a" * 257}
+        response = self.client.post(self.url, test_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(TweetModel.objects.filter(text=test_data["text"]).exists())
+        form = TweetForm(data=test_data)
+        self.assertEqual(
+            form.errors["text"], ["この値は 256 文字以下でなければなりません( 257 文字になっています)。"]
+        )
 
 
 class TestTweetDetailView(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser",
+            email="test@example.com",
+            password="testpassword",
+        )
+        self.client.force_login(self.user)
+        self.data = TweetModel.objects.create(author=self.user, text="test tweet")
+
     def test_success_get(self):
-        pass
+        response = self.client.get(
+            reverse("tweets:detail", kwargs={"pk": self.data.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["object"], self.data)
 
 
 class TestTweetDeleteView(TestCase):

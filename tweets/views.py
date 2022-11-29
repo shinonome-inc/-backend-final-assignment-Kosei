@@ -1,18 +1,18 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-
-# from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, DetailView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import UserPassesTestMixin
+from accounts.models import User
 from .models import TweetModel
 from .forms import TweetForm
+from django.shortcuts import get_object_or_404
 
 
 class HomeView(LoginRequiredMixin, ListView):
     template_name = "tweets/home.html"
     model = TweetModel
-    ordering = "-created_date"
+    ordering = "-created_at"
 
 
 class TweetCreateView(LoginRequiredMixin, CreateView):
@@ -41,3 +41,13 @@ class TweetDeleteView(UserPassesTestMixin, DeleteView):
     def test_func(self):
         tweet_instance = self.get_object()
         return tweet_instance.author == self.request.user
+
+
+class UserProfileView(LoginRequiredMixin, ListView):
+    template_name = "tweets/user_profile.html"
+    model = TweetModel
+    ordering = "-created_at"
+
+    def get_queryset(self):
+        author = get_object_or_404(User, username=self.kwargs["username"])
+        return TweetModel.objects.filter(author=author)

@@ -6,14 +6,11 @@
 {% block content %}
 <h3><a href="" type="button">Twitter Clone</a></h3>
 
-<h1>Backend Final Assignment</h1>
-
 <h5><a href="{% url 'tweets:create' %}" type="button">ツイート</a></h3>
     <h5><a href="{% url 'accounts:logout' %}" type="button">ログアウト</a></h3>
 
         <div>
             {% for tweet in object_list %}
-
             <div class="tweet_box">
                 <p><a href="{% url 'tweets:user_profile' tweet.author %}">{{ tweet.author }}</a></p>
                 <p>{{ tweet.text }}</p>
