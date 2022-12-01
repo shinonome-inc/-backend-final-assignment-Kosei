@@ -17,7 +17,7 @@
             <div class="tweet_box">
                 <p><a href="{% url 'tweets:user_profile' tweet.author %}">{{ tweet.author }}</a></p>
                 <p>{{ tweet.text }}</p>
-                <p>{{ tweet.created_date }}</p>
+                <p>{{ tweet.created_at }}</p>
                 {% if request.user == tweet.author %}
                 <p><a href="{% url 'tweets:delete' tweet.pk %}" type="button">削除</a></p>
                 {% endif %}

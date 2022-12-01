@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from mysite.settings import LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL
-from tweets.models import TweetModel
+from tweets.models import Tweet
 from .models import User
 from .forms import AccountsForm, LoginForm
 from django.contrib.auth import SESSION_KEY
@@ -328,12 +328,12 @@ class TestUserProfileView(TestCase):
             password="testpassword",
         )
         self.client.force_login(self.user)
-        self.data = TweetModel.objects.create(author=self.user, text="test tweet")
+        self.data = Tweet.objects.create(author=self.user, text="test tweet")
         self.url = reverse("tweets:user_profile", kwargs={"username": "testuser"})
         response = self.client.get(self.url)
         self.assertQuerysetEqual(
             response.context["object_list"],
-            TweetModel.objects.filter(author=self.user),
+            Tweet.objects.filter(author=self.user),
         )
 
 

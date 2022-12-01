@@ -1,9 +1,9 @@
 from django import forms
 
-from .models import TweetModel
+from .models import Tweet
 
 
 class TweetForm(forms.ModelForm):
     class Meta:
-        model = TweetModel
-        exclude = ["author"]
+        model = Tweet
+        fields = ("text",)

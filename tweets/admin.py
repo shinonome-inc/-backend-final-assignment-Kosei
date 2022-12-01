@@ -1,10 +1,13 @@
 from django.contrib import admin
 
-from .models import TweetModel
+from .models import Tweet
 
 
 class TweetAdmin(admin.ModelAdmin):
-    fields = ["author", "text", "created_at"]
+    fields = [
+        "author",
+        "text",
+    ]
 
 
-admin.site.register(TweetModel, TweetAdmin)
+admin.site.register(Tweet, TweetAdmin)

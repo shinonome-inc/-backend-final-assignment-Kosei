@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from accounts.models import User
 from tweets.forms import TweetForm
-from tweets.models import TweetModel
+from tweets.models import Tweet
 
 
 class TestHomeView(TestCase):
@@ -13,12 +13,10 @@ class TestHomeView(TestCase):
             password="testpassword",
         )
         self.client.force_login(self.user)
-        TweetModel.objects.create(author=self.user, text="test tweet")
+        Tweet.objects.create(author=self.user, text="test tweet")
         response = self.client.get(reverse("tweets:home"))
         self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(
-            response.context["object_list"], TweetModel.objects.all()
-        )
+        self.assertQuerysetEqual(response.context["object_list"], Tweet.objects.all())
 
 
 class TestTweetCreateView(TestCase):
@@ -47,13 +45,13 @@ class TestTweetCreateView(TestCase):
             msg_prefix="",
             fetch_redirect_response=True,
         )
-        self.assertTrue(TweetModel.objects.filter(text=test_data["text"]).exists())
+        self.assertTrue(Tweet.objects.filter(text=test_data["text"]).exists())
 
     def test_failure_post_with_empty_content(self):
         test_data = {"text": ""}
         response = self.client.post(self.url, test_data)
         self.assertEqual(response.status_code, 200)
-        self.assertFalse(TweetModel.objects.filter(text=test_data["text"]).exists())
+        self.assertFalse(Tweet.objects.filter(text=test_data["text"]).exists())
         form = TweetForm(data=test_data)
         self.assertEqual(form.errors["text"], ["このフィールドは必須です。"])
 
@@ -61,7 +59,7 @@ class TestTweetCreateView(TestCase):
         test_data = {"text": "a" * 257}
         response = self.client.post(self.url, test_data)
         self.assertEqual(response.status_code, 200)
-        self.assertFalse(TweetModel.objects.filter(text=test_data["text"]).exists())
+        self.assertFalse(Tweet.objects.filter(text=test_data["text"]).exists())
         form = TweetForm(data=test_data)
         self.assertEqual(
             form.errors["text"], ["この値は 256 文字以下でなければなりません( 257 文字になっています)。"]
@@ -76,7 +74,7 @@ class TestTweetDetailView(TestCase):
             password="testpassword",
         )
         self.client.force_login(self.user)
-        self.data = TweetModel.objects.create(author=self.user, text="test tweet")
+        self.data = Tweet.objects.create(author=self.user, text="test tweet")
 
     def test_success_get(self):
         response = self.client.get(
@@ -99,7 +97,7 @@ class TestTweetDeleteView(TestCase):
             password="testpassword2",
         )
 
-        self.data = TweetModel.objects.create(author=self.user1, text="test tweet")
+        self.data = Tweet.objects.create(author=self.user1, text="test tweet")
         self.url = reverse("tweets:delete", kwargs={"pk": self.data.pk})
 
     def test_success_post(self):
@@ -113,19 +111,19 @@ class TestTweetDeleteView(TestCase):
             msg_prefix="",
             fetch_redirect_response=True,
         )
-        self.assertFalse(TweetModel.objects.filter(text="test tweet").exists())
+        self.assertFalse(Tweet.objects.filter(text="test tweet").exists())
 
     def test_failure_post_with_not_exist_tweet(self):
         self.client.force_login(self.user1)
         response = self.client.post(reverse("tweets:delete", kwargs={"pk": 714}))
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(TweetModel.objects.count(), 1)
+        self.assertEqual(Tweet.objects.count(), 1)
 
     def test_failure_post_with_incorrect_user(self):
         self.client.force_login(self.user2)
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(TweetModel.objects.count(), 1)
+        self.assertEqual(Tweet.objects.count(), 1)
 
 
 class TestFavoriteView(TestCase):

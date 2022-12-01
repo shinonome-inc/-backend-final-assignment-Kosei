@@ -4,21 +4,21 @@ from django.views.generic import CreateView, ListView, DetailView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import UserPassesTestMixin
 from accounts.models import User
-from .models import TweetModel
+from .models import Tweet
 from .forms import TweetForm
 from django.shortcuts import get_object_or_404
 
 
 class HomeView(LoginRequiredMixin, ListView):
     template_name = "tweets/home.html"
-    model = TweetModel
+    model = Tweet
     ordering = "-created_at"
 
 
 class TweetCreateView(LoginRequiredMixin, CreateView):
     template_name = "tweets/tweet.html"
     form_class = TweetForm
-    model = TweetModel
+    model = Tweet
     success_url = reverse_lazy("tweets:home")
 
     def form_valid(self, form):
@@ -30,12 +30,12 @@ class TweetCreateView(LoginRequiredMixin, CreateView):
 
 class TweetDetailView(LoginRequiredMixin, DetailView):
     template_name = "tweets/detail.html"
-    model = TweetModel
+    model = Tweet
 
 
 class TweetDeleteView(UserPassesTestMixin, DeleteView):
     template_name = "tweets/delete.html"
-    model = TweetModel
+    model = Tweet
     success_url = reverse_lazy("tweets:home")
 
     def test_func(self):
@@ -45,9 +45,9 @@ class TweetDeleteView(UserPassesTestMixin, DeleteView):
 
 class UserProfileView(LoginRequiredMixin, ListView):
     template_name = "tweets/user_profile.html"
-    model = TweetModel
+    model = Tweet
     ordering = "-created_at"
 
     def get_queryset(self):
         author = get_object_or_404(User, username=self.kwargs["username"])
-        return TweetModel.objects.filter(author=author)
+        return Tweet.objects.filter(author=author)
