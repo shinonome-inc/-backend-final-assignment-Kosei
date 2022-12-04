@@ -13,6 +13,7 @@ class HomeView(LoginRequiredMixin, ListView):
     template_name = "tweets/home.html"
     model = Tweet
     ordering = "-created_at"
+    queryset = Tweet.objects.select_related("author")
 
 
 class TweetCreateView(LoginRequiredMixin, CreateView):
@@ -47,6 +48,7 @@ class UserProfileView(LoginRequiredMixin, ListView):
     template_name = "tweets/user_profile.html"
     model = Tweet
     ordering = "-created_at"
+    queryset = Tweet.objects.select_related("author")
 
     def get_queryset(self):
         author = get_object_or_404(User, username=self.kwargs["username"])
