@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+{% load static %}
 
 <head>
     <meta charset="UTF-8">
@@ -7,6 +8,7 @@
 </head>
 
 <body>
+    <link rel="stylesheet" href="{% static 'css/tweet_home.css' %}">
     {% block content %}
     {% endblock %}
 </body>

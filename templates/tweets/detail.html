@@ -1,0 +1,13 @@
+{% extends 'common/base.html' %}
+
+
+{% block title %}DETAIL{% endblock %}
+
+{% block content %}
+<h3><a href="" type="button">Twitter Clone</a></h3>
+
+<h1>{{ tweet.author }}</h1>
+<h1>{{ tweet.text }}</h1>
+<h1>{{ tweet.created_at }}</h1>
+
+{% endblock %}
