@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User
+from .models import User, Friendship
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -7,3 +7,10 @@ class UserAdmin(admin.ModelAdmin):
 
 
 admin.site.register(User, UserAdmin)
+
+
+class FrienshipAdmin(admin.ModelAdmin):
+    fileds = ["followee", "follower"]
+
+
+admin.site.register(Friendship, FrienshipAdmin)

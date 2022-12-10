@@ -1,5 +1,5 @@
 from .forms import AccountsForm, LoginForm
-from django.views.generic import CreateView
+from django.views.generic import CreateView  # ,ListView
 from .models import User
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
