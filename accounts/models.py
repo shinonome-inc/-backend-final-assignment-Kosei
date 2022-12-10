@@ -19,4 +19,4 @@ class Friendship(models.Model):
     )
     follower = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="friendship_follower"
-    )
+    )  #
