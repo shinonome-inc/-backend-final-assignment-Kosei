@@ -6,21 +6,29 @@
 {% block content %}
 <h3><a href="" type="button">Twitter Clone</a></h3>
 
-<h5><a href="{% url 'tweets:create' %}" type="button">ツイート</a></h3>
-    <h5><a href="{% url 'accounts:logout' %}" type="button">ログアウト</a></h3>
+<div>
+    <h2>@</h2>
 
-        <div>
-            {% for tweet in object_list %}
-            <div class="tweet_box">
-                <p><a href="{% url 'tweets:user_profile' tweet.author %}">{{ tweet.author }}</a></p>
-                <p>{{ tweet.text }}</p>
-                <p>{{ tweet.created_at }}</p>
-                {% if request.user == tweet.author %}
-                <p><a href="{% url 'tweets:delete' tweet.pk %}" type="button">削除</a></p>
-                {% endif %}
-                <p><a href="{% url 'tweets:detail' tweet.pk %}" type="button">詳細</a></p>
-            </div>
-            {% endfor %}
-        </div>
+    <p>アンフォロー</p>
+    <p>フォローリスト</p>
+    <p>フォロワーリスト</p>
+</div>
 
-        {% endblock %}
+
+
+<div>
+    {% for tweet in object_list %}
+    <div class="tweet_box">
+        <p><a href="{% url 'accounts:follow' tweet.author %}">フォロー</a></p>
+        <p><a href="{% url 'tweets:user_profile' tweet.author %}">{{ tweet.author }}</a></p>
+        <p>{{ tweet.text }}</p>
+        <p>{{ tweet.created_at }}</p>
+        {% if request.user == tweet.author %}
+        <p><a href="{% url 'tweets:delete' tweet.pk %}" type="button">削除</a></p>
+        {% endif %}
+        <p><a href="{% url 'tweets:detail' tweet.pk %}" type="button">詳細</a></p>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

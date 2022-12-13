@@ -1,5 +1,6 @@
+from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User
+from .models import Friendship, User
 from django.contrib.auth.forms import AuthenticationForm
 
 
@@ -12,3 +13,9 @@ class AccountsForm(UserCreationForm):
 
 class LoginForm(AuthenticationForm):
     pass
+
+
+class FollowForm(forms.ModelForm):
+    class Meta:
+        model = Friendship
+        fields = ("followee", "follower")

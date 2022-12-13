@@ -8,7 +8,7 @@
 
 <form method="post">
     {% csrf_token %}
-    <p>"{{ tweetmodel.text }}" を本当に削除しますか?</p>
+    <p>"{{ tweet.text }}" を本当に削除しますか?</p>
     <input type="submit" value="確定">
 </form>
 

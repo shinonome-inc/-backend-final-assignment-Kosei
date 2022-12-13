@@ -9,7 +9,7 @@ class User(AbstractUser):
 class Follow(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    follower = models.ManyToManyField("self", through="Friendship")
+    follower = models.ManyToManyField("self", through="Friendship", symmetrical=False)
 
 
 class Friendship(models.Model):
@@ -19,4 +19,11 @@ class Friendship(models.Model):
     )
     follower = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="friendship_follower"
-    )  #
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["followee", "follower"], name="friendship_unique"
+            ),
+        ]
