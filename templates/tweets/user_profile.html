@@ -4,19 +4,18 @@
 {% block title %}DETAIL{% endblock %}
 
 {% block content %}
-<h3><a href="" type="button">Twitter Clone</a></h3>
+<h3><a href="{% url 'tweets:home' %}" type="button">Twitter Clone</a></h3>
 
 <div>
     <h2>@{{ profile.username }}</h2>
     <form method="POST">
         {% csrf_token %}
         <button type="submit" formaction="{% url 'accounts:follow' profile.username %}">フォロー</button>
-        <p><a href=>アンフォロー</a></p>
+        <button type="submit" formaction="{% url 'accounts:unfollow' profile.username %}">アンフォロー</button>
     </form>
-    <p><a href=>フォローリスト</a></p>
-    <p><a href=>フォロワーリスト</a></p>
+    <p><a href="{% url 'accounts:following_list' profile.username %}">フォローリスト</a></p>
+    <p><a href="{% url 'accounts:follower_list' profile.username %}">フォロワーリスト</a></p>
 </div>
-
 
 
 <div>
