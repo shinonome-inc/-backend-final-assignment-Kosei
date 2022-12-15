@@ -8,8 +8,11 @@
 
 <div>
     <h2>@{{ profile.username }}</h2>
-    <p><a href="{% url 'tweets:user_profile' profile.username %}">フォロー</a></p>
-    <p><a href=>アンフォロー</a></p>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" formaction="{% url 'accounts:follow' profile.username %}">フォロー</button>
+        <p><a href=>アンフォロー</a></p>
+    </form>
     <p><a href=>フォローリスト</a></p>
     <p><a href=>フォロワーリスト</a></p>
 </div>

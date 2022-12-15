@@ -57,5 +57,4 @@ class UserProfileView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         author = get_object_or_404(User, username=self.kwargs["username"])
         context = {"profile": author}
-        print(context)
         return super().get_context_data(**context)

@@ -1,9 +1,9 @@
 from django.views import View
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from .forms import AccountsForm, LoginForm
 from django.views.generic import CreateView
 from .models import User, Friendship
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -38,8 +38,9 @@ class FollowView(LoginRequiredMixin, View):
     http_method_names = ["post"]
 
     def post(self, request, *args, **kwargs):
-        self.user = Friendship.objects.create(
-            follower=self.request.user,
-            followee=get_object_or_404(User, username=self.kwargs["username"]),
-        )
-        return self.get(request, *args, **kwargs)
+        followee = get_object_or_404(User, username=self.kwargs["username"])
+        follower = request.user
+        print(followee, follower)
+        print(kwargs)
+
+        return redirect("tweets:user_profile", followee.username)
