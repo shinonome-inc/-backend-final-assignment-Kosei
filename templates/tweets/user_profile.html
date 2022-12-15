@@ -7,11 +7,11 @@
 <h3><a href="" type="button">Twitter Clone</a></h3>
 
 <div>
-    <h2>@</h2>
-
-    <p>アンフォロー</p>
-    <p>フォローリスト</p>
-    <p>フォロワーリスト</p>
+    <h2>@{{ profile.username }}</h2>
+    <p><a href="{% url 'tweets:user_profile' profile.username %}">フォロー</a></p>
+    <p><a href=>アンフォロー</a></p>
+    <p><a href=>フォローリスト</a></p>
+    <p><a href=>フォロワーリスト</a></p>
 </div>
 
 
@@ -19,7 +19,6 @@
 <div>
     {% for tweet in object_list %}
     <div class="tweet_box">
-        <p><a href="{% url 'accounts:follow' tweet.author %}">フォロー</a></p>
         <p><a href="{% url 'tweets:user_profile' tweet.author %}">{{ tweet.author }}</a></p>
         <p>{{ tweet.text }}</p>
         <p>{{ tweet.created_at }}</p>

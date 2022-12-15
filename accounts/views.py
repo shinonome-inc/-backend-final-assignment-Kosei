@@ -1,12 +1,12 @@
-from django.shortcuts import redirect
-from .forms import AccountsForm, FollowForm, LoginForm
-from django.views.generic import CreateView, RedirectView
-from .models import User, Follow, Friendship
-from django.urls import reverse, reverse_lazy
+from django.views import View
+from django.shortcuts import get_object_or_404
+from .forms import AccountsForm, LoginForm
+from django.views.generic import CreateView
+from .models import User, Friendship
+from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Prefetch
 
 
 class SignUpView(CreateView):
@@ -33,11 +33,13 @@ class LogoutView(LogoutView):
     pass
 
 
-class FollowView(LoginRequiredMixin, RedirectView):
+class FollowView(LoginRequiredMixin, View):
+
     http_method_names = ["post"]
 
     def post(self, request, *args, **kwargs):
-        request = Friendship.objects.create(
-            follower=self.request.user, followee=self.kwargs["username"]
+        self.user = Friendship.objects.create(
+            follower=self.request.user,
+            followee=get_object_or_404(User, username=self.kwargs["username"]),
         )
         return self.get(request, *args, **kwargs)

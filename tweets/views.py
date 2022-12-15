@@ -53,3 +53,9 @@ class UserProfileView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         author = get_object_or_404(User, username=self.kwargs["username"])
         return Tweet.objects.filter(author=author)
+
+    def get_context_data(self, **kwargs):
+        author = get_object_or_404(User, username=self.kwargs["username"])
+        context = {"profile": author}
+        print(context)
+        return super().get_context_data(**context)
