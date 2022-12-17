@@ -4,11 +4,6 @@ from django.db import models
 
 class User(AbstractUser):
     email = models.EmailField(max_length=254, unique=True)
-
-
-class Follow(models.Model):
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     follower = models.ManyToManyField("self", through="Friendship", symmetrical=False)
 
 

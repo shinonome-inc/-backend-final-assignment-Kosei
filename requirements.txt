@@ -3,3 +3,4 @@ black
 flake8
 isort
 django[argon2]
+debug_toolbar

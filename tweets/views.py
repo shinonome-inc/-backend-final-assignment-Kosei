@@ -63,13 +63,13 @@ class UserProfileView(LoginRequiredMixin, ListView):
             followee=author
         )
 
-        follow_or_not = Friendship.objects.filter(
+        is_follow_or_not = Friendship.objects.filter(
             followee=author, follower=self.request.user
         ).exists()
 
         context = {
             "profile": author,
-            "follow_or_not": follow_or_not,
+            "follow_or_not": is_follow_or_not,
             "num_follows": self.followee.count(),
             "num_followers": self.follower.count(),
         }

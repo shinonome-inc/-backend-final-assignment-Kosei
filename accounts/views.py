@@ -1,4 +1,3 @@
-from django.http import Http404
 from django.views import View
 from django.views.generic import CreateView, ListView
 from django.contrib.auth.views import LoginView, LogoutView
@@ -47,6 +46,12 @@ class FollowView(LoginRequiredMixin, View):
 
         if self.followee == self.follower:
             messages.add_message(request, messages.ERROR, "自分自身のことはフォローできません。")
+            return render(request, "tweets/home.html")
+
+        elif Friendship.objects.filter(
+            followee=self.followee, follower=self.follower
+        ).exists():
+            messages.add_message(request, messages.ERROR, "このユーザーはすでにフォロー済みです")
             return render(request, "tweets/home.html")
 
         else:
