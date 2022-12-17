@@ -36,7 +36,6 @@ class TestTweetCreateView(TestCase):
     def test_success_post(self):
         test_data = {"text": "test tweet"}
         response = self.client.post(self.url, test_data)
-
         self.assertRedirects(
             response,
             reverse("tweets:home"),
