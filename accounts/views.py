@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.views import View
 from django.views.generic import CreateView, ListView
 from django.contrib.auth.views import LoginView, LogoutView
@@ -7,7 +8,8 @@ from .models import User, Friendship
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import login, authenticate
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib import messages
 
 
 class SignUpView(CreateView):
@@ -44,15 +46,15 @@ class FollowView(LoginRequiredMixin, View):
         self.follower = request.user
 
         if self.followee == self.follower:
-            pass  # error_messagesを表示
+            messages.add_message(request, messages.ERROR, "自分自身のことはフォローできません。")
+            return render(request, "tweets/home.html")
 
         else:
-            self.frienship = Friendship.objects.create(
+            self.friendship = Friendship.objects.create(
                 followee=self.followee,
                 follower=self.follower,
             )
-
-        return redirect("tweets:user_profile", self.frienship.followee.username)
+            return redirect("tweets:home")
 
 
 class UnFollowView(LoginRequiredMixin, View):
@@ -65,15 +67,15 @@ class UnFollowView(LoginRequiredMixin, View):
         self.follower = request.user
 
         if self.followee == self.follower:
-            pass  # error_messagesを表示
+            messages.add_message(request, messages.ERROR, "自分自身のことはアンフォローできません。")
+            return render(request, "tweets/home.html")
 
         else:
             Friendship.objects.filter(
                 followee=self.followee,
                 follower=self.follower,
             ).delete()
-
-        return redirect("tweets:user_profile", self.followee.username)
+            return redirect("tweets:home")
 
 
 class FollowingListView(ListView):

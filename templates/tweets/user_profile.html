@@ -19,6 +19,14 @@
         <button type="submit" formaction="{% url 'accounts:follow' profile.username %}">フォロー</button>
         {% endif %}
 
+        {% if messages %}
+        {% for message in messages %}
+        <div {% if message.tags %}class="{{ message.tags }}" {% endif %}>
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
     </form>
     {% endif %}
     <p><a href="{% url 'accounts:following_list' profile.username %}">フォローリスト/{{ num_follows }}人</a></p>

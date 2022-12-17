@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     "accounts.apps.AccountsConfig",
     "tweets.apps.TweetsConfig",
     "welcome.apps.WelcomeConfig",
-    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
@@ -52,16 +51,12 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 INTERNAL_IPS = ["127.0.0.1"]
 
 ROOT_URLCONF = "mysite.urls"
 
-DEBUG_TOOLBAR_CONFIG = {
-    "SHOW_TOOLBAR_CALLBACK": lambda request: True,
-}
 
 TEMPLATES = [
     {
@@ -142,3 +137,19 @@ AUTH_USER_MODEL = "accounts.User"
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "tweets:home"
 LOGOUT_REDIRECT_URL = "welcome:top"
+
+
+SQL_DEBUG = False  # testの時はここFalseを変える
+
+
+# debug_toolbar
+if SQL_DEBUG:
+
+    def show_toolbar(request):
+        return True
+
+    INSTALLED_APPS += ("debug_toolbar",)
+    MIDDLEWARE += ("debug_toolbar.middleware.DebugToolbarMiddleware",)
+    DEBUG_TOOLBAR_CONFIG = {
+        "SHOW_TOOLBAR_CALLBACK": show_toolbar,
+    }
