@@ -1,12 +1,13 @@
 from django.views import View
-from django.shortcuts import get_object_or_404, redirect
-from .forms import AccountsForm, LoginForm
 from django.views.generic import CreateView, ListView
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import AccountsForm, LoginForm
 from .models import User, Friendship
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404, redirect
 
 
 class SignUpView(CreateView):
@@ -72,7 +73,7 @@ class UnFollowView(LoginRequiredMixin, View):
                 follower=self.follower,
             ).delete()
 
-        return redirect("tweets:user_profile", self.follower.username)
+        return redirect("tweets:user_profile", self.followee.username)
 
 
 class FollowingListView(ListView):
@@ -80,8 +81,12 @@ class FollowingListView(ListView):
     template_name = "accounts/following_list.html"
 
     def get_queryset(self):
+
         self.follower = get_object_or_404(User, username=self.kwargs["username"])
-        return Friendship.objects.filter(follower=self.follower)
+
+        return Friendship.objects.select_related("follower").filter(
+            follower=self.follower
+        )
 
 
 class FollowerListView(ListView):
@@ -89,5 +94,9 @@ class FollowerListView(ListView):
     template_name = "accounts/follower_list.html"
 
     def get_queryset(self):
+
         self.followee = get_object_or_404(User, username=self.kwargs["username"])
-        return Friendship.objects.filter(followee=self.followee)
+
+        return Friendship.objects.select_related("followee").filter(
+            followee=self.followee
+        )

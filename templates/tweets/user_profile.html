@@ -7,14 +7,22 @@
 <h3><a href="{% url 'tweets:home' %}" type="button">Twitter Clone</a></h3>
 
 <div>
-    <h2>@{{ profile.username }}</h2>
+    <h2>@{{ profile }}</h2>
+
+    {% if profile != user %}
     <form method="POST">
         {% csrf_token %}
-        <button type="submit" formaction="{% url 'accounts:follow' profile.username %}">フォロー</button>
+
+        {% if follow_or_not %}
         <button type="submit" formaction="{% url 'accounts:unfollow' profile.username %}">アンフォロー</button>
+        {% else %}
+        <button type="submit" formaction="{% url 'accounts:follow' profile.username %}">フォロー</button>
+        {% endif %}
+
     </form>
-    <p><a href="{% url 'accounts:following_list' profile.username %}">フォローリスト</a></p>
-    <p><a href="{% url 'accounts:follower_list' profile.username %}">フォロワーリスト</a></p>
+    {% endif %}
+    <p><a href="{% url 'accounts:following_list' profile.username %}">フォローリスト/{{ num_follows }}人</a></p>
+    <p><a href="{% url 'accounts:follower_list' profile.username %}">フォロワーリスト/{{ num_followers }}人</a></p>
 </div>
 
 

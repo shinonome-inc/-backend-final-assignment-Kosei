@@ -25,5 +25,5 @@ class Friendship(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=["followee", "follower"], name="friendship_unique"
-            ),  # 500バンダイのエラーが出る、エラーメッセージはでない。エラーメッセージはViewで書く
+            ),
         ]
