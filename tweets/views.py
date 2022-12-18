@@ -4,9 +4,11 @@ from django.views.generic import CreateView, ListView, DetailView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import UserPassesTestMixin
 from accounts.models import User, Friendship
-from .models import Tweet
+from .models import Tweet, Favorite
 from .forms import TweetForm
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views import View
+from django.contrib import messages
 
 
 class HomeView(LoginRequiredMixin, ListView):
@@ -75,3 +77,29 @@ class UserProfileView(LoginRequiredMixin, ListView):
         }
 
         return super().get_context_data(**context)
+
+
+class LikeView(LoginRequiredMixin, View):
+    http_method_names = ["post"]
+
+    def post(self, request, *args, **kwargs):
+        self.tweet = get_object_or_404(Tweet, pk=self.kwargs["pk"])
+        self.user = request.user
+
+        if Favorite.objects.filter(tweet=self.tweet, user=self.user).exists():
+            messages.add_message(request, messages.ERROR, "このツイートはいいね済みです。")
+            return render(request, "tweets/home.html")  # 多分ここを変えなきゃいけない（？？）
+
+        else:
+            Favorite.objects.create(tweet=self.tweet, user=self.user)
+            return redirect("tweets:home")
+
+
+class UnlikeView(LoginRequiredMixin, View):
+    http_method_names = ["post"]
+
+    def post(self, request, *args, **kwargs):
+        self.tweet = get_object_or_404(Tweet, pk=self.kwargs["pk"])
+        self.user = request.user
+        Favorite.objects.filter(tweet=self.tweet, user=self.user).delete()
+        return redirect("tweets:home")
