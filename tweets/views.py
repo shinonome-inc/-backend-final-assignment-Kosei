@@ -1,14 +1,14 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, DetailView
 from django.views.generic.edit import DeleteView
+from django.views import View
+from django.urls import reverse_lazy
 from django.contrib.auth.mixins import UserPassesTestMixin
 from accounts.models import User, Friendship
 from .models import Tweet, Favorite
 from .forms import TweetForm
-from django.shortcuts import get_object_or_404, redirect, render
-from django.views import View
 from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect, render
 
 
 class HomeView(LoginRequiredMixin, ListView):
@@ -92,7 +92,7 @@ class LikeView(LoginRequiredMixin, View):
 
         else:
             Favorite.objects.create(tweet=self.tweet, user=self.user)
-            return redirect("tweets:home")
+            return redirect("tweets:home")  # 多分ここを変えなきゃいけない（？？）
 
 
 class UnlikeView(LoginRequiredMixin, View):
@@ -102,4 +102,4 @@ class UnlikeView(LoginRequiredMixin, View):
         self.tweet = get_object_or_404(Tweet, pk=self.kwargs["pk"])
         self.user = request.user
         Favorite.objects.filter(tweet=self.tweet, user=self.user).delete()
-        return redirect("tweets:home")
+        return redirect("tweets:home")  # 多分ここを変えなきゃいけない（？？）
