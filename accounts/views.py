@@ -1,9 +1,14 @@
+from django.views import View
+from django.views.generic import CreateView, ListView
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import AccountsForm, LoginForm
-from django.views.generic import CreateView
-from .models import User
+from .models import User, Friendship
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import login, authenticate
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib import messages
 
 
 class SignUpView(CreateView):
@@ -28,3 +33,77 @@ class LoginView(LoginView):
 
 class LogoutView(LogoutView):
     pass
+
+
+class FollowView(LoginRequiredMixin, View):
+
+    http_method_names = ["post"]
+
+    def post(self, request, *args, **kwargs):
+
+        self.followee = get_object_or_404(User, username=self.kwargs["username"])
+        self.follower = request.user
+
+        if self.followee == self.follower:
+            messages.add_message(request, messages.ERROR, "自分自身のことはフォローできません。")
+            return render(request, "tweets/home.html")
+
+        elif Friendship.objects.filter(
+            followee=self.followee, follower=self.follower
+        ).exists():
+            messages.add_message(request, messages.ERROR, "このユーザーはすでにフォロー済みです")
+            return render(request, "tweets/home.html")
+
+        else:
+            self.friendship = Friendship.objects.create(
+                followee=self.followee,
+                follower=self.follower,
+            )
+            return redirect("tweets:home")
+
+
+class UnFollowView(LoginRequiredMixin, View):
+
+    http_method_names = ["post"]
+
+    def post(self, request, *args, **kwargs):
+
+        self.followee = get_object_or_404(User, username=self.kwargs["username"])
+        self.follower = request.user
+
+        if self.followee == self.follower:
+            messages.add_message(request, messages.ERROR, "自分自身のことはアンフォローできません。")
+            return render(request, "tweets/home.html")
+
+        else:
+            Friendship.objects.filter(
+                followee=self.followee,
+                follower=self.follower,
+            ).delete()
+            return redirect("tweets:home")
+
+
+class FollowingListView(ListView):
+    model = Friendship
+    template_name = "accounts/following_list.html"
+
+    def get_queryset(self):
+
+        self.follower = get_object_or_404(User, username=self.kwargs["username"])
+
+        return Friendship.objects.select_related("follower").filter(
+            follower=self.follower
+        )
+
+
+class FollowerListView(ListView):
+    model = Friendship
+    template_name = "accounts/follower_list.html"
+
+    def get_queryset(self):
+
+        self.followee = get_object_or_404(User, username=self.kwargs["username"])
+
+        return Friendship.objects.select_related("followee").filter(
+            followee=self.followee
+        )

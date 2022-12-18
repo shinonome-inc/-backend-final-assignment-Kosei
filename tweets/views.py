@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, DetailView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import UserPassesTestMixin
-from accounts.models import User
+from accounts.models import User, Friendship
 from .models import Tweet
 from .forms import TweetForm
 from django.shortcuts import get_object_or_404
@@ -48,8 +48,30 @@ class UserProfileView(LoginRequiredMixin, ListView):
     template_name = "tweets/user_profile.html"
     model = Tweet
     ordering = "-created_at"
-    queryset = Tweet.objects.select_related("author")
 
     def get_queryset(self):
         author = get_object_or_404(User, username=self.kwargs["username"])
-        return Tweet.objects.filter(author=author)
+        return Tweet.objects.select_related("author").filter(author=author)
+
+    def get_context_data(self, **kwargs):
+        author = get_object_or_404(User, username=self.kwargs["username"])
+
+        self.followee = Friendship.objects.select_related("followee").filter(
+            follower=author
+        )
+        self.follower = Friendship.objects.select_related("follower").filter(
+            followee=author
+        )
+
+        is_follow_or_not = Friendship.objects.filter(
+            followee=author, follower=self.request.user
+        ).exists()
+
+        context = {
+            "profile": author,
+            "follow_or_not": is_follow_or_not,
+            "num_follows": self.followee.count(),
+            "num_followers": self.follower.count(),
+        }
+
+        return super().get_context_data(**context)

@@ -4,11 +4,11 @@
 {% block title %}DELETE{% endblock %}
 
 {% block content %}
-<h3><a href="" type="button">Twitter Clone</a></h3>
+<h3><a href="{% url 'tweets:home' %}" type="button">Twitter Clone</a></h3>
 
 <form method="post">
     {% csrf_token %}
-    <p>"{{ tweetmodel.text }}" を本当に削除しますか?</p>
+    <p>"{{ tweet.text }}" を本当に削除しますか?</p>
     <input type="submit" value="確定">
 </form>
 

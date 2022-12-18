@@ -1,0 +1,17 @@
+{% extends 'common/base.html' %}
+
+{% block title %}FOLLOW_LIST{% endblock %}
+
+{% block content %}
+<h3><a href="{% url 'tweets:home' %}" type="button">Twitter Clone</a></h3>
+
+<h1>Backend Final Assignment</h1>
+
+<h2>フォローリスト</h2>
+{% for follow in object_list %}
+<h3><a href="{% url 'tweets:user_profile' follow.followee.username %}" type="button">
+        @{{ follow.followee.username}}
+    </a></h3>
+{% endfor %}
+
+{% endblock %}
