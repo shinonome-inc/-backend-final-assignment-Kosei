@@ -138,7 +138,7 @@ class TestFavoriteView(TestCase):
 
     def test_success_post(self):
         response = self.client.post(self.url)
-        # self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertTrue(Favorite.objects.filter(tweet=self.data, user=self.user))
 
     def test_failure_post_with_not_exist_tweet(self):
@@ -149,7 +149,7 @@ class TestFavoriteView(TestCase):
     def test_failure_post_with_favorited_tweet(self):
         Favorite.objects.create(tweet=self.data, user=self.user)
         response = self.client.post(self.url)
-        # self.assertEqual(response.status_code,200)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(Favorite.objects.all().count(), 1)
 
 
@@ -167,7 +167,7 @@ class TestUnfavoriteView(TestCase):
 
     def test_success_post(self):
         response = self.client.post(self.url)
-        # self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(Favorite.objects.all().count(), 0)
 
     def test_failure_post_with_not_exist_tweet(self):
@@ -178,4 +178,4 @@ class TestUnfavoriteView(TestCase):
     def test_failure_post_with_unfavorited_tweet(self):
         Favorite.objects.filter(tweet=self.data, user=self.user).delete()
         response = self.client.post(self.url)
-        # self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)

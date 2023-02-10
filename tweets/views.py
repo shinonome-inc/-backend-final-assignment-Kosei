@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
 from django.views.generic import CreateView, ListView, DetailView
 from django.views.generic.edit import DeleteView
 from django.views import View
@@ -7,15 +8,27 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from accounts.models import User, Friendship
 from .models import Tweet, Favorite
 from .forms import TweetForm
-from django.contrib import messages
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404
 
 
 class HomeView(LoginRequiredMixin, ListView):
     template_name = "tweets/home.html"
     model = Tweet
     ordering = "-created_at"
-    queryset = Tweet.objects.select_related("author")
+
+    def get_context_data(self, **kwargs):
+        queryset = Tweet.objects.select_related("author").all()
+        list = Favorite.objects.filter(user=self.request.user)
+        user_like_list = []
+        for i in list:
+            user_like_list.append(i.tweet)
+
+        context = {
+            "tweet_list": queryset,
+            "user_liked_list": user_like_list,
+        }
+
+        return super().get_context_data(**context)
 
 
 class TweetCreateView(LoginRequiredMixin, CreateView):
@@ -87,12 +100,26 @@ class LikeView(LoginRequiredMixin, View):
         self.user = request.user
 
         if Favorite.objects.filter(tweet=self.tweet, user=self.user).exists():
-            messages.add_message(request, messages.ERROR, "このツイートはいいね済みです。")
-            return render(request, "tweets/home.html")  # 多分ここを変えなきゃいけない（？？）
-
+            num_liked = (
+                Favorite.objects.select_related("like").filter(tweet=self.tweet).count()
+            )
+            context = {
+                "num_liked": num_liked,
+                "tweet_pk": self.tweet.pk,
+                "is_liked": True,
+            }
         else:
             Favorite.objects.create(tweet=self.tweet, user=self.user)
-            return redirect("tweets:home")  # 多分ここを変えなきゃいけない（？？）
+            num_liked = (
+                Favorite.objects.select_related("like").filter(tweet=self.tweet).count()
+            )
+            context = {
+                "num_liked": num_liked,
+                "tweet_pk": self.tweet.pk,
+                "is_liked": True,
+            }
+
+        return JsonResponse(context)
 
 
 class UnlikeView(LoginRequiredMixin, View):
@@ -102,4 +129,8 @@ class UnlikeView(LoginRequiredMixin, View):
         self.tweet = get_object_or_404(Tweet, pk=self.kwargs["pk"])
         self.user = request.user
         Favorite.objects.filter(tweet=self.tweet, user=self.user).delete()
-        return redirect("tweets:home")  # 多分ここを変えなきゃいけない（？？）
+        num_liked = (
+            Favorite.objects.select_related("like").filter(tweet=self.tweet).count()
+        )
+        context = {"num_liked": num_liked, "tweet_pk": self.tweet.pk, "is_liked": False}
+        return JsonResponse(context)

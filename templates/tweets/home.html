@@ -1,5 +1,5 @@
 {% extends 'common/base.html' %}
-
+{% load static %}
 
 {% block title %}HOME{% endblock %}
 
@@ -14,7 +14,6 @@
 
 <div>
     {% for tweet in object_list %}
-
     <div class="tweet_box">
         <p><a href="{% url 'tweets:user_profile' tweet.author %}">{{ tweet.author }}</a></p>
         <p>{{ tweet.text }}</p>
@@ -23,6 +22,37 @@
         <p><a href="{% url 'tweets:delete' tweet.pk %}" type="button">削除</a></p>
         {% endif %}
         <p><a href="{% url 'tweets:detail' tweet.pk %}" type="button">詳細</a></p>
+
+        {% if tweet in user_liked_list %}
+        <button id="like-button" data-post-id="{{ tweet.pk }}">いいね取り消し</button>
+        <span id="like-count">{{ post.like_count }}</span>
+
+        {% else %}
+        <button id="like-button" data-post-id="{{ tweet.pk }}">いいね</button>
+        <span id="like-count">{{ post.like_count }}</span>
+
+        {% endif %}
+
+        <script>
+            // JavaScriptで、fetchAPIを使って、DjangoのViewにアクセス
+            document.querySelector('#like-button').addEventListener('click', function (event) {
+                event.preventDefault();
+                const postId = this.dataset.postId;
+                fetch(`/like/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value,
+                    },
+                    body: JSON.stringify({ post_id: postId }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        // 取得したデータを画面に反映する
+                        document.querySelector('#like-count').innerHTML = data.like_count;
+                    });
+            });
+        </script>
     </div>
     {% endfor %}
 </div>
