@@ -1,0 +1,6 @@
+{% if tweet in user_liked_list %}
+<button id="unlike-button" data-post-id="{{ tweet.pk }}" type="submit">いいね取り消し</button>
+{% else %}
+<button id="like-button" data-post-id="{{ tweet.pk }}" type="submit">いいね</button>
+{% endif %}
+<p name="{{tweet.pk}}-count"> {{ num_liked }} </p>

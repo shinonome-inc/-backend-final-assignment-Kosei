@@ -128,9 +128,26 @@ class UnlikeView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         self.tweet = get_object_or_404(Tweet, pk=self.kwargs["pk"])
         self.user = request.user
-        Favorite.objects.filter(tweet=self.tweet, user=self.user).delete()
-        num_liked = (
-            Favorite.objects.select_related("like").filter(tweet=self.tweet).count()
-        )
-        context = {"num_liked": num_liked, "tweet_pk": self.tweet.pk, "is_liked": False}
+
+        if Favorite.objects.filter(tweet=self.tweet, user=self.user).exists():
+            Favorite.objects.filter(tweet=self.tweet, user=self.user).delete()
+            num_liked = (
+                Favorite.objects.select_related("like").filter(tweet=self.tweet).count()
+            )
+            context = {
+                "num_liked": num_liked,
+                "tweet_pk": self.tweet.pk,
+                "is_liked": False,
+            }
+
+        else:
+            num_liked = (
+                Favorite.objects.select_related("like").filter(tweet=self.tweet).count()
+            )
+            context = {
+                "num_liked": num_liked,
+                "tweet_pk": self.tweet.pk,
+                "is_liked": False,
+            }
+
         return JsonResponse(context)
