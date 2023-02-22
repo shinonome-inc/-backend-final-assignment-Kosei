@@ -24,13 +24,13 @@
         <p><a href="{% url 'tweets:detail' tweet.pk %}" type="button">詳細</a></p>
 
         {% if tweet in user_liked_list %}
-        <button id="unlike-button-{{tweet.pk}}" class="like-unlike-button" data-tweet-pk="{{ tweet.pk }}"
-            type="submit">いいね取り消し</button>
+        <button id="like-button-{{tweet.pk}}" class="like-unlike-button" data-tweet-pk="{{ tweet.pk }}"
+            data-is-liked="true" type="submit">Unlike</button>
         {% else %}
         <button id="like-button-{{tweet.pk}}" class="like-unlike-button" data-tweet-pk="{{ tweet.pk }}"
-            type="submit">いいね</button>
+            data-is-liked="true" type="submit">Like</button>
         {% endif %}
-        <span id="likes-count-{{ tweet.pk }}" name="{{tweet.pk}}-count"> {{ tweet.num_liked }} </span>
+        <span id="likes-count-{{ tweet.pk }}" name="{{tweet.pk}}-count"></span>
     </div>
     {% endfor %}
 
@@ -53,7 +53,7 @@
         for (const likeLink of likeLinks) {
             likeLink.addEventListener('click', async (e) => {
                 let url = '';
-                const element = e.currentTarget;
+                const element = e.currentTarget;//datasetはHTMLで指定したdata-*の属性を指す
                 if (element.dataset.is_liked == 'true') {
                     url = "{% url 'tweets:unlike' 0 %}".replace("0", element.getAttribute('data-tweet-pk'));
                 } else {
@@ -74,14 +74,15 @@
                     const data = await response.json();
 
                     const counter = document.getElementById('likes-count-' + data.tweet_pk);
+                    const counter2 = document.getElementById('like-button-' + data.tweet_pk);
                     counter.textContent = data.num_liked;
                     const icon = document.getElementById('likes-count-' + data.tweet_pk);
-                    if (element.dataset.isLiked == 'false') {
-                        element.dataset.isLiked = 'true';
-                        icon.id = ('likes-count-' + data.tweet_pk);
+                    if (element.dataset.is_liked == 'false') {
+                        element.dataset.is_liked = 'true';
+                        counter2.textContent = 'Unlike'
                     } else {
-                        element.dataset.isLiked = 'false';
-                        icon.id = ('likes-count-' + data.tweet_pk);
+                        element.dataset.is_liked = 'false';
+                        counter2.textContent = 'Like'
                     }
                 } catch (e) {
                     alert(e);
