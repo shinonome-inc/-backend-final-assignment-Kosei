@@ -44,8 +44,9 @@
         <p><a href="{% url 'tweets:delete' tweet.pk %}" type="button">削除</a></p>
         {% endif %}
         <p><a href="{% url 'tweets:detail' tweet.pk %}" type="button">詳細</a></p>
+        {% include 'tweets/like.html' %}
     </div>
     {% endfor %}
 </div>
-
+{% include 'tweets/ajax.html' %}
 {% endblock %}

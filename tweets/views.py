@@ -18,7 +18,7 @@ class HomeView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         queryset = Tweet.objects.select_related("author").all()
-        list = Favorite.objects.filter(user=self.request.user)
+        list = Favorite.objects.select_related("tweet").filter(user=self.request.user)
         user_like_list = []
         for i in list:
             user_like_list.append(i.tweet)
@@ -48,6 +48,18 @@ class TweetDetailView(LoginRequiredMixin, DetailView):
     template_name = "tweets/detail.html"
     model = Tweet
 
+    def get_context_data(self, **kwargs):
+        list = Favorite.objects.select_related("tweet").filter(user=self.request.user)
+        user_like_list = []
+        for i in list:
+            user_like_list.append(i.tweet)
+
+        context = {
+            "user_liked_list": user_like_list,
+        }
+
+        return super().get_context_data(**context)
+
 
 class TweetDeleteView(UserPassesTestMixin, DeleteView):
     template_name = "tweets/delete.html"
@@ -70,23 +82,26 @@ class UserProfileView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         author = get_object_or_404(User, username=self.kwargs["username"])
-
         self.followee = Friendship.objects.select_related("followee").filter(
             follower=author
         )
         self.follower = Friendship.objects.select_related("follower").filter(
             followee=author
         )
-
         is_follow_or_not = Friendship.objects.filter(
             followee=author, follower=self.request.user
         ).exists()
+        list = Favorite.objects.select_related("tweet").filter(user=self.request.user)
+        user_like_list = []
+        for i in list:
+            user_like_list.append(i.tweet)
 
         context = {
             "profile": author,
             "follow_or_not": is_follow_or_not,
             "num_follows": self.followee.count(),
             "num_followers": self.follower.count(),
+            "user_liked_list": user_like_list,
         }
 
         return super().get_context_data(**context)

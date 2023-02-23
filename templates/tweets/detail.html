@@ -9,5 +9,7 @@
 <h1>{{ tweet.author }}</h1>
 <h1>{{ tweet.text }}</h1>
 <h1>{{ tweet.created_at }}</h1>
+{% include 'tweets/like.html' %}
+{% include 'tweets/ajax.html' %}
 
 {% endblock %}
