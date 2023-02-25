@@ -15,16 +15,16 @@ class HomeView(LoginRequiredMixin, ListView):
     template_name = "tweets/home.html"
     model = Tweet
     ordering = "-created_at"
+    queryset = Tweet.objects.all().select_related("author")
 
     def get_context_data(self, **kwargs):
-        queryset = Tweet.objects.select_related("author").all()
-        list = Favorite.objects.select_related("tweet").filter(user=self.request.user)
-        user_like_list = []
-        for i in list:
-            user_like_list.append(i.tweet)
-
+        context = super().get_context_data(**kwargs)
+        user_like_list = (
+            Favorite.objects.select_related("tweet")
+            .filter(user=self.request.user)
+            .values_list("tweet")
+        )
         context = {
-            "tweet_list": queryset,
             "user_liked_list": user_like_list,
         }
 
@@ -49,11 +49,12 @@ class TweetDetailView(LoginRequiredMixin, DetailView):
     model = Tweet
 
     def get_context_data(self, **kwargs):
-        list = Favorite.objects.select_related("tweet").filter(user=self.request.user)
-        user_like_list = []
-        for i in list:
-            user_like_list.append(i.tweet)
-
+        context = super().get_context_data(**kwargs)
+        user_like_list = (
+            Favorite.objects.select_related("tweet")
+            .filter(user=self.request.user)
+            .values_list("tweet")
+        )
         context = {
             "user_liked_list": user_like_list,
         }
@@ -81,6 +82,7 @@ class UserProfileView(LoginRequiredMixin, ListView):
         return Tweet.objects.select_related("author").filter(author=author)
 
     def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         author = get_object_or_404(User, username=self.kwargs["username"])
         self.followee = Friendship.objects.select_related("followee").filter(
             follower=author
@@ -91,11 +93,11 @@ class UserProfileView(LoginRequiredMixin, ListView):
         is_follow_or_not = Friendship.objects.filter(
             followee=author, follower=self.request.user
         ).exists()
-        list = Favorite.objects.select_related("tweet").filter(user=self.request.user)
-        user_like_list = []
-        for i in list:
-            user_like_list.append(i.tweet)
-
+        user_like_list = (
+            Favorite.objects.select_related("tweet")
+            .filter(user=self.request.user)
+            .values_list("tweet")
+        )
         context = {
             "profile": author,
             "follow_or_not": is_follow_or_not,
@@ -111,29 +113,15 @@ class LikeView(LoginRequiredMixin, View):
     http_method_names = ["post"]
 
     def post(self, request, *args, **kwargs):
-        self.tweet = get_object_or_404(Tweet, pk=self.kwargs["pk"])
-        self.user = request.user
-
-        if Favorite.objects.filter(tweet=self.tweet, user=self.user).exists():
-            num_liked = (
-                Favorite.objects.select_related("like").filter(tweet=self.tweet).count()
-            )
-            context = {
-                "num_liked": num_liked,
-                "tweet_pk": self.tweet.pk,
-                "is_liked": True,
-            }
-        else:
-            Favorite.objects.create(tweet=self.tweet, user=self.user)
-            num_liked = (
-                Favorite.objects.select_related("like").filter(tweet=self.tweet).count()
-            )
-            context = {
-                "num_liked": num_liked,
-                "tweet_pk": self.tweet.pk,
-                "is_liked": True,
-            }
-
+        tweet = get_object_or_404(Tweet, pk=self.kwargs["pk"])
+        user = request.user
+        Favorite.objects.get_or_create(tweet=tweet, user=user)
+        num_liked = tweet.favorite_tweet.count()
+        context = {
+            "num_liked": num_liked,
+            "tweet_pk": tweet.pk,
+            "is_liked": True,
+        }
         return JsonResponse(context)
 
 
@@ -141,28 +129,13 @@ class UnlikeView(LoginRequiredMixin, View):
     http_method_names = ["post"]
 
     def post(self, request, *args, **kwargs):
-        self.tweet = get_object_or_404(Tweet, pk=self.kwargs["pk"])
-        self.user = request.user
-
-        if Favorite.objects.filter(tweet=self.tweet, user=self.user).exists():
-            Favorite.objects.filter(tweet=self.tweet, user=self.user).delete()
-            num_liked = (
-                Favorite.objects.select_related("like").filter(tweet=self.tweet).count()
-            )
-            context = {
-                "num_liked": num_liked,
-                "tweet_pk": self.tweet.pk,
-                "is_liked": False,
-            }
-
-        else:
-            num_liked = (
-                Favorite.objects.select_related("like").filter(tweet=self.tweet).count()
-            )
-            context = {
-                "num_liked": num_liked,
-                "tweet_pk": self.tweet.pk,
-                "is_liked": False,
-            }
-
+        tweet = get_object_or_404(Tweet, pk=self.kwargs["pk"])
+        user = request.user
+        Favorite.objects.filter(tweet=tweet, user=user).delete()
+        num_liked = tweet.favorite_tweet.count()
+        context = {
+            "num_liked": num_liked,
+            "tweet_pk": tweet.pk,
+            "is_liked": False,
+        }
         return JsonResponse(context)

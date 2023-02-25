@@ -35,11 +35,9 @@
                     throw new Error('Network response was not ok');
                 }
                 const data = await response.json();
-
                 const counter = document.getElementById('likes-count-' + data.tweet_pk);
                 const counter2 = document.getElementById('like-button-' + data.tweet_pk);
                 counter.textContent = data.num_liked;
-                const icon = document.getElementById('likes-count-' + data.tweet_pk);
                 if (element.dataset.is_liked == 'false') {
                     element.dataset.is_liked = 'true';
                     counter2.textContent = 'Unlike'

@@ -1,10 +1,10 @@
 from django.db import models
-from accounts.models import User
+from django.conf import settings
 
 
 class Tweet(models.Model):
     author = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
     text = models.TextField(max_length=256)
@@ -17,7 +17,7 @@ class Favorite(models.Model):
         Tweet, on_delete=models.CASCADE, related_name="favorite_tweet"
     )
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="favorite_user"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="favorite_user"
     )
 
     class Meta:

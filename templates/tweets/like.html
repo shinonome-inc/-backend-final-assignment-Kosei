@@ -1,5 +1,5 @@
 {% if tweet in user_liked_list %}
-<button id="like-button-{{tweet.pk}}" class="like-unlike-button" data-tweet-pk="{{ tweet.pk }}" data-is-liked="true"
+<button id="like-button-{{tweet.pk}}" class="like-unlike-button" data-tweet-pk="{{ tweet.pk }}" data-is-liked="false"
     type="submit">Unlike</button>
 {% else %}
 <button id="like-button-{{tweet.pk}}" class="like-unlike-button" data-tweet-pk="{{ tweet.pk }}" data-is-liked="true"

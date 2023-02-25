@@ -144,6 +144,7 @@ class TestFavoriteView(TestCase):
     def test_failure_post_with_not_exist_tweet(self):
         response = self.client.post(reverse("tweets:like", kwargs={"pk": 714}))
         self.assertContains(response, "Not Found", status_code=404)
+        self.assertEqual(response.status_code, 404)
         self.assertEqual(Favorite.objects.all().count(), 0)
 
     def test_failure_post_with_favorited_tweet(self):
@@ -172,7 +173,7 @@ class TestUnfavoriteView(TestCase):
 
     def test_failure_post_with_not_exist_tweet(self):
         response = self.client.post(reverse("tweets:unlike", kwargs={"pk": 714}))
-        self.assertContains(response, "Not Found", status_code=404)
+        self.assertEqual(response.status_code, 404)
         self.assertEqual(Favorite.objects.all().count(), 1)
 
     def test_failure_post_with_unfavorited_tweet(self):
