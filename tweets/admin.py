@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Tweet, Favorite
+from .models import Favorite, Tweet
 
 
 class TweetAdmin(admin.ModelAdmin):

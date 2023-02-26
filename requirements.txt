@@ -18,3 +18,4 @@ pyflakes==2.5.0
 sqlparse==0.4.2
 tomli==2.0.1
 tzdata==2022.2
+isort==5.12.0

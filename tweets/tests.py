@@ -1,8 +1,9 @@
 from django.test import TestCase
 from django.urls import reverse
+
 from accounts.models import User
 from tweets.forms import TweetForm
-from tweets.models import Tweet, Favorite
+from tweets.models import Favorite, Tweet
 
 
 class TestHomeView(TestCase):

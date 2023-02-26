@@ -1,11 +1,13 @@
+from django.contrib.auth import SESSION_KEY
+from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.messages import get_messages
+
 from mysite.settings import LOGIN_REDIRECT_URL, LOGOUT_REDIRECT_URL
 from tweets.models import Tweet
-from .models import User, Friendship
+
 from .forms import AccountsForm, LoginForm
-from django.contrib.auth import SESSION_KEY
+from .models import Friendship, User
 
 
 class TestSignUpSuccessView(TestCase):
@@ -292,7 +294,7 @@ class TestUserProfileView(TestCase):
 
     def test_success_get(self):
         self.data = Tweet.objects.create(author=self.user1, text="test tweet")
-        self.url = reverse("tweets:user_profile", kwargs={"username": "testuser1"})
+        self.url = reverse("accounts:user_profile", kwargs={"username": "testuser1"})
         response = self.client.get(self.url)
         self.assertQuerysetEqual(
             response.context["object_list"],
