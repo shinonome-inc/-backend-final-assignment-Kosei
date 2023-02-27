@@ -46,17 +46,12 @@ class TweetDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        tweet = get_object_or_404(Tweet, pk=self.kwargs["pk"])
-
         user_like_list = (
             Favorite.objects.select_related("tweet")
-            .filter(tweet=tweet, user=self.request.user)
+            .filter(tweet=context["tweet"], user=self.request.user)
             .values_list("tweet")
         )
-
         context["user_liked_list"] = user_like_list
-
         return context
 
 
@@ -94,8 +89,6 @@ class UnlikeView(LoginRequiredMixin, View):
         user = request.user
         if Favorite.objects.filter(tweet=tweet, user=user).exists():
             Favorite.objects.filter(tweet=tweet, user=user).delete()
-        else:
-            pass
         num_liked = tweet.favorite_tweet.count()
         context = {
             "num_liked": num_liked,
