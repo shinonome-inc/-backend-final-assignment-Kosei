@@ -139,7 +139,7 @@ LOGIN_REDIRECT_URL = "tweets:home"
 LOGOUT_REDIRECT_URL = "welcome:top"
 
 
-SQL_DEBUG = True  # testの時はここFalseを変える
+SQL_DEBUG = False  # testの時はここFalseを変える
 
 
 # debug_toolbar

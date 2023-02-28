@@ -23,8 +23,6 @@ class HomeView(LoginRequiredMixin, ListView):
             .values_list("tweet", flat=True)
         )
         context["user_liked_list"] = user_like_list
-        print(user_like_list)
-
         return context
 
 
