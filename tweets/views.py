@@ -20,9 +20,10 @@ class HomeView(LoginRequiredMixin, ListView):
         user_like_list = (
             Favorite.objects.select_related("tweet")
             .filter(user=self.request.user)
-            .values_list("tweet")
+            .values_list("tweet", flat=True)
         )
         context["user_liked_list"] = user_like_list
+        print(user_like_list)
 
         return context
 
@@ -48,8 +49,8 @@ class TweetDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         user_like_list = (
             Favorite.objects.select_related("tweet")
-            .filter(tweet=context["tweet"], user=self.request.user)
-            .values_list("tweet")
+            .filter(tweet=self.object, user=self.request.user)
+            .values_list("tweet", flat=True)
         )
         context["user_liked_list"] = user_like_list
         return context

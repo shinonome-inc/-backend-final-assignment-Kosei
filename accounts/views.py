@@ -131,7 +131,7 @@ class UserProfileView(LoginRequiredMixin, ListView):
         user_like_list = (
             Favorite.objects.select_related("tweet")
             .filter(user=self.request.user)
-            .values_list("tweet")
+            .values_list("tweet", flat=True)
         )
         context["profile"] = author
         context["follow_or_not"] = is_follow_or_not

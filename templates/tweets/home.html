@@ -12,6 +12,8 @@
 <h3><a href="{% url 'tweets:create' %}" type="button">ツイート</a></h3>
 <h3><a href="{% url 'accounts:logout' %}" type="button">ログアウト</a></h3>
 
+<p>{{ user_liked_list }}</p>
+
 <div>
     {% for tweet in object_list %}
     <div class="tweet_box">
