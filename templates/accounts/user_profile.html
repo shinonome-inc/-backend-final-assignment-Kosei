@@ -37,15 +37,16 @@
 <div>
     {% for tweet in object_list %}
     <div class="tweet_box">
-        <p><a href="{% url 'tweets:user_profile' tweet.author %}">{{ tweet.author }}</a></p>
+        <p><a href="{% url 'accounts:user_profile' tweet.author %}">{{ tweet.author }}</a></p>
         <p>{{ tweet.text }}</p>
         <p>{{ tweet.created_at }}</p>
         {% if request.user == tweet.author %}
         <p><a href="{% url 'tweets:delete' tweet.pk %}" type="button">削除</a></p>
         {% endif %}
         <p><a href="{% url 'tweets:detail' tweet.pk %}" type="button">詳細</a></p>
+        {% include 'tweets/like.html' %}
     </div>
     {% endfor %}
 </div>
-
+{% include 'tweets/ajax.html' %}
 {% endblock %}

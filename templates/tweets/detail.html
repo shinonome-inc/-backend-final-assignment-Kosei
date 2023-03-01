@@ -4,10 +4,12 @@
 {% block title %}DETAIL{% endblock %}
 
 {% block content %}
-<h3><a href="" type="button">Twitter Clone</a></h3>
+<h3><a href="{% url 'tweets:home' %}" type="button">Twitter Clone</a></h3>
 
-<h1>{{ tweet.author }}</h1>
+<h1><a href="{% url 'accounts:user_profile' tweet.author %}" type="button">{{ tweet.author }}</a></h1>
 <h1>{{ tweet.text }}</h1>
 <h1>{{ tweet.created_at }}</h1>
+{% include 'tweets/like.html' %}
+{% include 'tweets/ajax.html' %}
 
 {% endblock %}

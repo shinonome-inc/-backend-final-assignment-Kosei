@@ -1,14 +1,16 @@
+from django.contrib import messages
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView, LogoutView
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, ListView
-from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth.mixins import LoginRequiredMixin
+
+from tweets.models import Favorite, Tweet
+
 from .forms import AccountsForm, LoginForm
-from .models import User, Friendship
-from django.urls import reverse_lazy
-from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth import login, authenticate
-from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib import messages
+from .models import Friendship, User
 
 
 class SignUpView(CreateView):
@@ -107,3 +109,33 @@ class FollowerListView(ListView):
         return Friendship.objects.select_related("followee").filter(
             followee=self.followee
         )
+
+
+class UserProfileView(LoginRequiredMixin, ListView):
+    template_name = "accounts/user_profile.html"
+    model = Tweet
+    ordering = "-created_at"
+
+    def get_queryset(self):
+        author = get_object_or_404(User, username=self.kwargs["username"])
+        return Tweet.objects.select_related("author").filter(author=author)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        author = get_object_or_404(User, username=self.kwargs["username"])
+        followee = Friendship.objects.select_related("followee").filter(follower=author)
+        follower = Friendship.objects.select_related("follower").filter(followee=author)
+        is_follow_or_not = Friendship.objects.filter(
+            followee=author, follower=self.request.user
+        ).exists()
+        user_like_list = (
+            Favorite.objects.select_related("tweet")
+            .filter(user=self.request.user)
+            .values_list("tweet", flat=True)
+        )
+        context["profile"] = author
+        context["follow_or_not"] = is_follow_or_not
+        context["num_follows"] = followee.count()
+        context["num_followers"] = follower.count()
+        context["user_liked_list"] = user_like_list
+        return context

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -10,10 +11,14 @@ class User(AbstractUser):
 class Friendship(models.Model):
 
     followee = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="friendship_followee"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="friendship_followee",
     )
     follower = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="friendship_follower"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="friendship_follower",
     )
 
     class Meta:

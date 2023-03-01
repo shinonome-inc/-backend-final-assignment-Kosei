@@ -9,7 +9,7 @@
 
 <h2>フォロワーリスト</h2>
 {% for follower in object_list %}
-<h3><a href="{% url 'tweets:user_profile' follower.follower.username %}" type="button">
+<h3><a href="{% url 'accounts:user_profile' follower.follower.username %}" type="button">
         @{{ follower.follower.username}}
     </a></h3>
 {% endfor %}
