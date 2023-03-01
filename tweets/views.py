@@ -75,7 +75,6 @@ class LikeView(LoginRequiredMixin, View):
         context = {
             "num_liked": num_liked,
             "tweet_pk": tweet.pk,
-            "is_liked": True,
         }
         return JsonResponse(context)
 
@@ -92,6 +91,5 @@ class UnlikeView(LoginRequiredMixin, View):
         context = {
             "num_liked": num_liked,
             "tweet_pk": tweet.pk,
-            "is_liked": False,
         }
         return JsonResponse(context)

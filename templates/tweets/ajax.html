@@ -17,7 +17,7 @@
         likeLink.addEventListener('click', async (e) => {
             let url = '';
             const element = e.currentTarget;//datasetはHTMLで指定したdata-*の属性を指す
-            if (element.dataset.is_liked == 'false') {
+            if (element.dataset.is_liked == 'true') {
                 url = "{% url 'tweets:unlike' 0 %}".replace("0", element.getAttribute('data-tweet-pk'));
             } else {
                 url = "{% url 'tweets:like' 0 %}".replace("0", element.getAttribute('data-tweet-pk'));
@@ -40,10 +40,10 @@
                 counter.textContent = data.num_liked;
                 if (element.dataset.is_liked == 'false') {
                     element.dataset.is_liked = 'true';
-                    counter2.textContent = 'like'
+                    counter2.textContent = 'Unlike'
                 } else {
                     element.dataset.is_liked = 'false';
-                    counter2.textContent = 'UnLike'
+                    counter2.textContent = 'Like'
                 }
             } catch (e) {
                 alert(e);

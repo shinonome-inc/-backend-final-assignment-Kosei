@@ -1,8 +1,8 @@
 {% if tweet.pk in user_liked_list %}
-<button id="like-button-{{tweet.pk}}" class="like-unlike-button" data-tweet-pk="{{ tweet.pk }}" data-is_liked="false"
+<button id="like-button-{{tweet.pk}}" class="like-unlike-button" data-tweet-pk="{{ tweet.pk }}" data-is_liked="true"
     type="submit">Unlike</button>
 {% else %}
-<button id="like-button-{{tweet.pk}}" class="like-unlike-button" data-tweet-pk="{{ tweet.pk }}" data-is_liked="true"
+<button id="like-button-{{tweet.pk}}" class="like-unlike-button" data-tweet-pk="{{ tweet.pk }}" data-is_liked="false"
     type="submit">Like</button>
 {% endif %}
 <span id="likes-count-{{ tweet.pk }}" name="{{tweet.pk}}-count">{{ tweet.favorite_tweet.count }}</span>
